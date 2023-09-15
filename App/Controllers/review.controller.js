@@ -21,7 +21,7 @@ class ReviewsController {
 	list = async (req, res) => {
 		try {
 			const result = await Reviews.findAll({
-				attributes: ['id', 'subject', 'num_stars', 'created_at'],
+				attributes: ['id', 'subject', 'num_stars', 'created_at', 'comment'],
 				include: [{
 					model: Users,
 					attributes: ['firstname', 'lastname', 'email']
@@ -86,11 +86,12 @@ class ReviewsController {
 	 */
 	 create = async (req, res) => {
 		const user_id = await getUserFromToken(req, res)
-		const { subject, comment, date, num_stars, event_id } = req.body
+		const { subject, comment, num_stars, event_id } = req.body
 
 		if(user_id && subject && comment && num_stars && event_id) {
 			try {
 				req.body.user_id = user_id
+				req.body.date = new Date()
 				const model = await Reviews.create(req.body)
 				return res.json({
 					message: `Record created`,
